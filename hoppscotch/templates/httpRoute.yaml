@@ -1,0 +1,35 @@
+{{- define "kong.httpRoute" }}
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{ include "hoppscotch.fullname" . }}-{{ .routeSuffix }}
+  annotations:
+    konghq.com/strip-path: 'true'
+spec:
+  parentRefs:
+  - name: {{ include "hoppscotch.fullname" . }}-gateway
+  {{- if .hostname }}
+  hostnames:
+    - {{ .hostname }}
+  {{- end }}
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: {{ .Values.kong.pathPrefix }}
+    backendRefs:
+    - name: {{ include "hoppscotch.fullname" . }}-service
+      kind: Service
+      port: {{ .backendPort }}
+{{- end }}
+
+{{- if .Values.kong.enabled }}
+{{- $kongValues := .Values.kong }}
+
+{{- include "kong.httpRoute" (merge (dict "routeSuffix" "front-http-route" "hostname" $kongValues.hostname_front "backendPort" 3000) .) }}
+---
+{{- include "kong.httpRoute" (merge (dict "routeSuffix" "admin-http-route" "hostname" $kongValues.hostname_admin "backendPort" 3100) .) }}
+---
+{{- include "kong.httpRoute" (merge (dict "routeSuffix" "backend-http-route" "hostname" $kongValues.hostname_backend "backendPort" 3170) .) }}
+
+{{- end }}

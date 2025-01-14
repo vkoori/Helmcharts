@@ -1,0 +1,16 @@
+{{- if .Values.kong.enabled }}
+{{- range .Values.kong.plugins }}
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: {{ .key }}
+  annotations:
+    kubernetes.io/ingress.class: kong
+{{- if .config }}
+config:
+{{ toYaml .config | indent 2 }}
+{{- end }}
+plugin: {{ .val }}
+{{- end }}
+{{- end }}
