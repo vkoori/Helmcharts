@@ -96,10 +96,10 @@ volumes:
       name: env
 
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: 
-  - name: env-file
-    mountPath: "/dist/backend/.env" 
-    subPath: .env
+volumeMounts: {}
+  # - name: env-file
+  #   mountPath: "/dist/backend/.env" 
+  #   subPath: .env
 
 nodeSelector: {}
 

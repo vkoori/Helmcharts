@@ -59,7 +59,7 @@ spec:
           {{- end }}
           envFrom:
             - configMapRef:
-                name: env
+                name: {{ include "hoppscotch.fullname" . }}-env
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
